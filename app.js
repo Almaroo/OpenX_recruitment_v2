@@ -47,10 +47,53 @@ const task2 = (() => {
         nonuniqe = [...nonuniqe, title];
       }
     });
+
     return { nonuniqe, unique };
   };
 
-  return { getJoinedData, countPostsForUser, getUniquePosts };
+  const degToRad = deg => {
+    return deg * (Math.PI / 180);
+  };
+
+  const calculateDistance = (geoA, geoB) => {
+    const R = 6371;
+    let deltaLat = degToRad(degToRad(geoA.lat) - degToRad(geoB.lat));
+    let deltaLng = degToRad(degToRad(geoA.lng) - degToRad(geoB.lng));
+
+    let a =
+      Math.sin(deltaLat) * Math.sin(deltaLat) +
+      Math.cos(geoA.lat) *
+        Math.cos(geoB.lat) *
+        Math.sin(deltaLng) *
+        Math.sin(deltaLng);
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  const getClosestUser = users => {
+    users.forEach(user => {
+      let minDistance = Infinity;
+      let closestUser;
+      users
+        .filter(x => x !== user)
+        .forEach(x => {
+          let currentDistance = calculateDistance(
+            user.address.geo,
+            x.address.geo
+          );
+
+          if (currentDistance < minDistance) {
+            minDistance = currentDistance;
+            closestUser = x;
+          }
+        });
+
+      user.closestUser = closestUser;
+    });
+    return users;
+  };
+
+  return { getJoinedData, countPostsForUser, getUniquePosts, getClosestUser };
 })();
 
 //POŁĄCZONE DANE
@@ -69,3 +112,6 @@ memoize(task2.getJoinedData).then(({ posts }) => {
 });
 
 //NAJBLIŻSZY UŻYTKOWNIK
+memoize(task2.getJoinedData).then(({ DB }) => {
+  console.log(task2.getClosestUser(DB));
+});
