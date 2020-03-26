@@ -55,6 +55,7 @@ const task2 = (() => {
     return deg * (Math.PI / 180);
   };
 
+  //HAVERSINE FORMULA https://en.wikipedia.org/wiki/Haversine_formula
   const calculateDistance = (geoA, geoB) => {
     const R = 6371;
     let deltaLat = degToRad(degToRad(geoA.lat) - degToRad(geoB.lat));
