@@ -1,7 +1,8 @@
 //ZAPISUJĘ PROMISE W MEMOIZE W CELU UNIKNIĘCIA POWIELANIA TEGO SAMEGO REQUESTA
 const memoize = (() => {
   const cache = new WeakMap();
-  const memoize = method => {
+  const memoize = (method, test) => {
+    if (test) return cache;
     if (!cache.has(method)) {
       cache.set(method, method());
     }
@@ -116,3 +117,5 @@ memoize(task2.getJoinedData).then(({ posts }) => {
 memoize(task2.getJoinedData).then(({ DB }) => {
   console.log(task2.getClosestUser(DB));
 });
+
+module.exports = { memoize, task2 };
